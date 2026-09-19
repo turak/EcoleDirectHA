@@ -8,7 +8,7 @@ Envoie automatiquement les devoirs et les alertes de notes EcoleDirecte sur un s
 2. Configure les options de cet add-on : webhook, liste des élèves (nom + `student_id` EcoleDirecte), horaires.
 3. **Avant le premier démarrage**, il faut fournir des identifiants EcoleDirecte déjà validés (la double authentification par question de sécurité n'est pas gérable depuis un add-on sans interface) :
    - Sur un PC, authentifie-toi une première fois avec le serveur MCP EcoleDirecte (voir son README), ce qui crée `~/.ecoledirecte/credentials.json` et `~/.ecoledirecte/session.json`.
-   - Copie ces deux fichiers dans le dossier de données de cet add-on, sous `.ecoledirecte/` (accessible via le partage Samba ou l'add-on *File editor*, chemin `/addon_configs/<nom_du_slug>/.ecoledirecte/`).
+   - Copie ces deux fichiers dans le dossier de données de cet add-on, sous `.ecoledirecte/` (accessible via SSH/Samba, chemin `/addon_configs/<hash>_<nom_du_slug>/.ecoledirecte/` sur l'hôte HAOS).
 4. Démarre l'add-on. Les journaux confirment la planification et l'état d'authentification.
 
 ## Trouver le `student_id`
