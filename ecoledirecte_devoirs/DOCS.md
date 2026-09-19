@@ -14,21 +14,21 @@ Envoie automatiquement les devoirs et les alertes de notes EcoleDirecte sur un s
 
 ## Déclencher un test manuel
 
-Sans attendre l'horaire prévu, crée un fichier **vide** (via SSH ou Samba) directement dans le dossier de données de l'add-on (le même que `.ecoledirecte/`, donc `/addon_configs/<hash>_<slug>/`) :
+**Interface avec boutons (recommandé)** : ouvre la page de l'add-on dans Home Assistant → bouton **"OUVRIR L'INTERFACE WEB"** (ou l'icône dans la barre latérale si épinglée). Une page s'affiche avec un bouton par tâche (devoirs du lendemain, devoirs de la semaine, alertes notes) : clique dessus pour la lancer immédiatement et voir le résultat s'afficher sur la page (et sur Discord).
+
+**Alternative en SSH/Samba** : crée un fichier **vide** dans le dossier de données de l'add-on (le même que `.ecoledirecte/`, donc `/addon_configs/<hash>_<slug>/`) :
 
 - `trigger_daily` → lance le digest des devoirs du lendemain
 - `trigger_weekly` → lance le récapitulatif de la semaine
 - `trigger_grades` → lance la vérification des notes
 
-Exemple en SSH :
-
 ```bash
 touch /addon_configs/<hash>_<slug>/trigger_daily
 ```
 
-L'add-on détecte le fichier dans les 5 secondes, lance la tâche correspondante puis supprime le fichier automatiquement. Regarde les logs pour voir le résultat.
+L'add-on détecte le fichier dans les 5 secondes, lance la tâche correspondante puis le supprime automatiquement.
 
-Pour tester une nouvelle tâche ajoutée plus tard, il suffit de l'enregistrer dans l'objet `JOBS` de `index.mjs` — elle bénéficie alors automatiquement de son propre fichier `trigger_<nom>`.
+Pour tester une nouvelle tâche ajoutée plus tard, il suffit de l'enregistrer dans l'objet `JOBS` de `index.mjs` — elle apparaît alors automatiquement comme un nouveau bouton sur l'interface et bénéficie aussi de son fichier `trigger_<nom>`.
 
 ## Trouver le `student_id`
 

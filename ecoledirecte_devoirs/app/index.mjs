@@ -1,10 +1,12 @@
 import cron from "node-cron";
 import { readFileSync, existsSync, unlinkSync } from "fs";
 import { runDailyJob, runWeeklyJob, runGradeJob } from "./jobs.mjs";
+import { startWebUi } from "./webui.mjs";
 
 const OPTIONS_PATH = "/data/options.json";
 const CRED_FILE = "/config/.ecoledirecte/credentials.json";
 const TRIGGER_POLL_MS = 5000;
+const WEB_UI_PORT = 8099;
 
 // Registry of jobs that can be triggered on a schedule or manually via a
 // trigger file. Adding a new job later just means adding an entry here.
@@ -77,6 +79,8 @@ async function main() {
   cron.schedule(toCron(options.grade_check_time), () => runJob("grades", options));
 
   setInterval(() => pollTriggers(options), TRIGGER_POLL_MS);
+
+  startWebUi(WEB_UI_PORT, JOBS, options);
 
   console.log("EcoleDirecte scheduler démarré et en attente des prochains créneaux.");
 }

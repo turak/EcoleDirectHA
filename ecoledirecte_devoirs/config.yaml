@@ -1,5 +1,5 @@
 name: "EcoleDirecte vers Discord"
-version: "1.1.0"
+version: "1.2.0"
 slug: "ecoledirecte_devoirs"
 description: "Envoie les devoirs et alertes de notes EcoleDirecte sur Discord, sur un planning configurable"
 url: "https://github.com/turak/EcoleDirectHA"
@@ -8,6 +8,10 @@ arch:
   - amd64
 startup: application
 boot: auto
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:school-outline
+panel_title: "EcoleDirecte"
 map:
   - addon_config:rw
 options:
