@@ -12,6 +12,24 @@ Envoie automatiquement les devoirs et les alertes de notes EcoleDirecte sur un s
    - **Important** : si tu changes la version de l'add-on après une première installation, une simple mise à jour ne suffit pas toujours à appliquer un nouveau point de montage — désinstalle puis réinstalle l'add-on pour forcer la recréation du conteneur avec les bons montages.
 4. Démarre l'add-on. Les journaux confirment la planification et l'état d'authentification.
 
+## Déclencher un test manuel
+
+Sans attendre l'horaire prévu, crée un fichier **vide** (via SSH ou Samba) directement dans le dossier de données de l'add-on (le même que `.ecoledirecte/`, donc `/addon_configs/<hash>_<slug>/`) :
+
+- `trigger_daily` → lance le digest des devoirs du lendemain
+- `trigger_weekly` → lance le récapitulatif de la semaine
+- `trigger_grades` → lance la vérification des notes
+
+Exemple en SSH :
+
+```bash
+touch /addon_configs/<hash>_<slug>/trigger_daily
+```
+
+L'add-on détecte le fichier dans les 5 secondes, lance la tâche correspondante puis supprime le fichier automatiquement. Regarde les logs pour voir le résultat.
+
+Pour tester une nouvelle tâche ajoutée plus tard, il suffit de l'enregistrer dans l'objet `JOBS` de `index.mjs` — elle bénéficie alors automatiquement de son propre fichier `trigger_<nom>`.
+
 ## Trouver le `student_id`
 
 Regarde les logs au premier démarrage, ou consulte le profil renvoyé par l'outil `get_student_profile` du serveur MCP.

@@ -1,5 +1,5 @@
 name: "EcoleDirecte vers Discord"
-version: "1.0.3"
+version: "1.1.0"
 slug: "ecoledirecte_devoirs"
 description: "Envoie les devoirs et alertes de notes EcoleDirecte sur Discord, sur un planning configurable"
 url: "https://github.com/turak/EcoleDirectHA"
