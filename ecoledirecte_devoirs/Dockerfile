@@ -15,7 +15,7 @@ COPY app/package.json ./
 RUN npm install --omit=dev
 COPY app/ ./
 
-ENV HOME=/addon_config
+ENV HOME=/config
 ENV ECOLEDIRECTE_MCP_DIR=/opt/ecoledirecte-mcp
 
 CMD [ "node", "index.mjs" ]

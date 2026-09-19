@@ -3,7 +3,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
 const MCP_DIR = process.env.ECOLEDIRECTE_MCP_DIR || "/opt/ecoledirecte-mcp";
-const SEEN_GRADES_FILE = "/addon_config/seen_grades.json";
+const SEEN_GRADES_FILE = "/config/seen_grades.json";
 
 export function extractJson(text) {
   const start = text.indexOf("{");
