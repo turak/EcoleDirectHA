@@ -1,0 +1,32 @@
+name: "EcoleDirecte vers Discord"
+version: "1.0.0"
+slug: "ecoledirecte_devoirs"
+description: "Envoie les devoirs et alertes de notes EcoleDirecte sur Discord, sur un planning configurable"
+url: "https://github.com/turak/EcoleDirectHA"
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+options:
+  discord_webhook_url: ""
+  students:
+    - name: "Enfant"
+      student_id: 0
+  daily_time: "17:00"
+  daily_skip_weekday: 5
+  weekly_day: "sat"
+  weekly_time: "12:00"
+  grade_check_time: "17:00"
+  grade_alert_fraction: 0.5
+schema:
+  discord_webhook_url: password
+  students:
+    - name: str
+      student_id: int
+  daily_time: match(^([01]\d|2[0-3]):[0-5]\d$)
+  daily_skip_weekday: int(0,6)
+  weekly_day: list(mon|tue|wed|thu|fri|sat|sun)
+  weekly_time: match(^([01]\d|2[0-3]):[0-5]\d$)
+  grade_check_time: match(^([01]\d|2[0-3]):[0-5]\d$)
+  grade_alert_fraction: float(0,1)

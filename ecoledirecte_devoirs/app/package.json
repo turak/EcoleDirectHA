@@ -1,0 +1,9 @@
+{
+  "name": "ecoledirecte-scheduler",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "node-cron": "^3.0.3"
+  }
+}
