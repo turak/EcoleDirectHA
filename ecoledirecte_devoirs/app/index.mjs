@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import { runDailyJob, runWeeklyJob, runGradeJob } from "./jobs.mjs";
 
 const OPTIONS_PATH = "/data/options.json";
-const CRED_FILE = "/data/.ecoledirecte/credentials.json";
+const CRED_FILE = "/config/.ecoledirecte/credentials.json";
 
 function loadOptions() {
   return JSON.parse(readFileSync(OPTIONS_PATH, "utf-8"));
