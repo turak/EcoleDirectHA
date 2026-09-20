@@ -1,5 +1,5 @@
 name: "EcoleDirecte vers Discord"
-version: "1.4.0"
+version: "1.5.0"
 slug: "ecoledirecte_devoirs"
 description: "Envoie les devoirs et alertes de notes EcoleDirecte sur Discord, sur un planning configurable"
 url: "https://github.com/turak/EcoleDirectHA"
@@ -16,6 +16,7 @@ map:
   - addon_config:rw
 options:
   discord_webhook_url: ""
+  school_zone: "B"
   students:
     - name: "Enfant"
       student_id: 0
@@ -33,6 +34,7 @@ options:
   grade_alert_fraction: 0.5
 schema:
   discord_webhook_url: password
+  school_zone: list(A|B|C|aucune)
   students:
     - name: str
       student_id: int

@@ -45,6 +45,17 @@ Regarde les logs au premier démarrage, ou consulte le profil renvoyé par l'out
 | `weekly_day` / `weekly_time` | Jour et heure du récapitulatif hebdomadaire |
 | `grade_check_time` | Heure de vérification des nouvelles notes |
 | `grade_alert_fraction` | Seuil d'alerte (0.5 = note à la moitié du barème ou moins) |
+| `school_zone` | Zone de vacances scolaires (`A`, `B`, `C` ou `aucune` pour désactiver) |
+
+## Gestion des vacances scolaires
+
+Si `school_zone` est renseignée, l'add-on interroge le calendrier scolaire officiel ([data.education.gouv.fr](https://data.education.gouv.fr)) :
+
+- **Digest quotidien** : pas d'envoi si le lendemain tombe en vacances.
+- **Récap hebdomadaire** : le premier samedi des vacances, un message "Bonnes vacances, reprise le ..." remplace le récap habituel. Les samedis suivants, tant que les vacances continuent, rien n'est envoyé.
+- **Alertes notes** : inchangées, elles continuent tous les jours même pendant les vacances.
+
+Le calendrier est mis en cache 24h pour éviter d'interroger l'API à chaque tâche.
 
 ## Limite connue
 

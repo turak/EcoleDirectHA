@@ -11,6 +11,7 @@ import {
   saveSeenGradeIds,
   parseGradeValue,
 } from "./lib.mjs";
+import { getVacationPeriods, findVacationPeriod, isFirstSaturdayOfVacation } from "./vacations.mjs";
 
 function nextWeekday(from, targetDay) {
   const d = new Date(from);
@@ -18,6 +19,17 @@ function nextWeekday(from, targetDay) {
   const diff = ((targetDay - d.getDay()) + 7) % 7 || 7;
   d.setDate(d.getDate() + diff);
   return d;
+}
+
+async function getPeriodsSafe(options) {
+  const zone = options.school_zone;
+  if (!zone || zone === "aucune") return [];
+  try {
+    return await getVacationPeriods(zone);
+  } catch (err) {
+    console.error("[vacances] Erreur de récupération du calendrier scolaire (on continue sans filtrage) :", err);
+    return [];
+  }
 }
 
 const DAILY_SEND_KEYS = [
@@ -42,6 +54,12 @@ export async function runDailyJob(options) {
   tomorrow.setHours(0, 0, 0, 0);
   tomorrow.setDate(tomorrow.getDate() + 1);
   const dateStr = toIsoDate(tomorrow);
+
+  const periods = await getPeriodsSafe(options);
+  if (findVacationPeriod(tomorrow, periods)) {
+    console.log(`[daily] ${dateStr} est en vacances : pas de digest.`);
+    return;
+  }
 
   const sections = [];
   await withClient(async (client) => {
@@ -70,8 +88,26 @@ export async function runDailyJob(options) {
 }
 
 export async function runWeeklyJob(options) {
-  const dayMap = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
-  const weekStart = nextWeekday(new Date(), dayMap[options.weekly_day] ?? 1);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const periods = await getPeriodsSafe(options);
+  const currentPeriod = findVacationPeriod(today, periods);
+  if (currentPeriod) {
+    if (!isFirstSaturdayOfVacation(today, currentPeriod)) {
+      console.log(`[weekly] En pleines vacances (${currentPeriod.description}) : pas de récap cette semaine.`);
+      return;
+    }
+    const content =
+      `**☀️ Bonnes ${currentPeriod.description} !**\n\n` +
+      `Reprise le ${formatDateLong(currentPeriod.end)}. Pas de récap hebdomadaire jusque-là.`;
+    await postToDiscord(options.discord_webhook_url, content);
+    console.log("[weekly] Message de début de vacances posté.");
+    return;
+  }
+
+  // La semaine à venir commence toujours un lundi, indépendamment du jour d'envoi.
+  const weekStart = nextWeekday(today, 1);
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
 
