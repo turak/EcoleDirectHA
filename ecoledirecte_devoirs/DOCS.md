@@ -41,7 +41,7 @@ Regarde les logs au premier démarrage, ou consulte le profil renvoyé par l'out
 | `discord_webhook_url` | URL du webhook Discord |
 | `students` | Liste `{name, student_id}` |
 | `daily_time` | Heure du digest quotidien (devoirs du lendemain) |
-| `daily_skip_weekdays` | Jours à sauter (0=dimanche...6=samedi, défaut [5, 6] = vendredi et samedi, car pas cours ni samedi ni dimanche) |
+| `daily_send_<jour>` | Un interrupteur par jour (dimanche à samedi) pour activer/désactiver l'envoi du digest ce jour-là. Par défaut activé dimanche→jeudi, désactivé vendredi et samedi (pas cours le lendemain) |
 | `weekly_day` / `weekly_time` | Jour et heure du récapitulatif hebdomadaire |
 | `grade_check_time` | Heure de vérification des nouvelles notes |
 | `grade_alert_fraction` | Seuil d'alerte (0.5 = note à la moitié du barème ou moins) |

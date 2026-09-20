@@ -20,10 +20,21 @@ function nextWeekday(from, targetDay) {
   return d;
 }
 
+const DAILY_SEND_KEYS = [
+  "daily_send_sunday",
+  "daily_send_monday",
+  "daily_send_tuesday",
+  "daily_send_wednesday",
+  "daily_send_thursday",
+  "daily_send_friday",
+  "daily_send_saturday",
+];
+
 export async function runDailyJob(options) {
   const today = new Date();
-  if ((options.daily_skip_weekdays ?? []).includes(today.getDay())) {
-    console.log(`[daily] Jour ${today.getDay()} : pas de digest.`);
+  const sendToday = options[DAILY_SEND_KEYS[today.getDay()]];
+  if (!sendToday) {
+    console.log(`[daily] Jour ${today.getDay()} : pas de digest (désactivé dans les options).`);
     return;
   }
 
