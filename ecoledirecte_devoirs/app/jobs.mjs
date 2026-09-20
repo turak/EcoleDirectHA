@@ -22,8 +22,8 @@ function nextWeekday(from, targetDay) {
 
 export async function runDailyJob(options) {
   const today = new Date();
-  if (today.getDay() === options.daily_skip_weekday) {
-    console.log(`[daily] Jour ${options.daily_skip_weekday} : pas de digest.`);
+  if ((options.daily_skip_weekdays ?? []).includes(today.getDay())) {
+    console.log(`[daily] Jour ${today.getDay()} : pas de digest.`);
     return;
   }
 
