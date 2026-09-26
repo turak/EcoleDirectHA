@@ -111,42 +111,43 @@ export async function runWeeklyJob(options) {
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
 
-  const sections = [];
+  const header = `**Devoirs de la semaine du ${formatDateLong(weekStart)}**`;
+
   await withClient(async (client) => {
     for (const student of options.students) {
+      let studentSection;
       const listResult = await fetchHomeworkList(client, student.student_id);
       if (listResult.error) {
-        sections.push(`**${student.name}** — erreur : ${listResult.error}`);
-        continue;
+        studentSection = `**${student.name}** — erreur : ${listResult.error}`;
+      } else {
+        const upcomingDays = listResult.days
+          .map((d) => ({ ...d, dateObj: parseIsoDateLocal(d.date) }))
+          .filter((d) => d.dateObj >= weekStart && d.dateObj <= weekEnd)
+          .sort((a, b) => a.dateObj - b.dateObj);
+
+        if (upcomingDays.length === 0) {
+          studentSection = `**${student.name}** — rien de prévu la semaine prochaine ✅`;
+        } else {
+          const dayBlocks = [];
+          for (const day of upcomingDays) {
+            const detail = await fetchDayHomework(client, student.student_id, day.date);
+            if (detail.error || detail.items.length === 0) continue;
+            const lines = detail.items.map((i) => {
+              const flagStr = i.flags.length > 0 ? ` (${i.flags.join(", ")})` : "";
+              return `- **${i.subject}**${flagStr}\n  ${i.text}`;
+            });
+            dayBlocks.push(`_${formatDateLong(day.dateObj)}_\n${lines.join("\n")}`);
+          }
+          studentSection = `**${student.name}**\n${dayBlocks.join("\n\n")}`;
+        }
       }
 
-      const upcomingDays = listResult.days
-        .map((d) => ({ ...d, dateObj: parseIsoDateLocal(d.date) }))
-        .filter((d) => d.dateObj >= weekStart && d.dateObj <= weekEnd)
-        .sort((a, b) => a.dateObj - b.dateObj);
-
-      if (upcomingDays.length === 0) {
-        sections.push(`**${student.name}** — rien de prévu la semaine prochaine ✅`);
-        continue;
-      }
-
-      const dayBlocks = [];
-      for (const day of upcomingDays) {
-        const detail = await fetchDayHomework(client, student.student_id, day.date);
-        if (detail.error || detail.items.length === 0) continue;
-        const lines = detail.items.map((i) => {
-          const flagStr = i.flags.length > 0 ? ` (${i.flags.join(", ")})` : "";
-          return `- **${i.subject}**${flagStr}\n  ${i.text}`;
-        });
-        dayBlocks.push(`_${formatDateLong(day.dateObj)}_\n${lines.join("\n")}`);
-      }
-      sections.push(`**${student.name}**\n${dayBlocks.join("\n\n")}`);
+      // Un message Discord par élève : ça reste lisible même sur une semaine chargée.
+      await postToDiscord(options.discord_webhook_url, `${header}\n\n${studentSection}`);
     }
   });
 
-  const content = `**Devoirs de la semaine du ${formatDateLong(weekStart)}**\n\n${sections.join("\n\n")}`;
-  await postToDiscord(options.discord_webhook_url, content);
-  console.log("[weekly] Digest posté.");
+  console.log("[weekly] Digest posté (un message par élève).");
 }
 
 export async function runGradeJob(options) {
