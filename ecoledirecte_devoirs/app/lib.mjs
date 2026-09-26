@@ -111,14 +111,35 @@ export function parseGradeValue(value) {
   return Number.isFinite(n) ? n : undefined;
 }
 
+const DISCORD_MAX_LENGTH = 2000;
+
+/** Split into Discord-sized chunks, preferring to break on blank lines, then line breaks. */
+function splitForDiscord(content, maxLength = DISCORD_MAX_LENGTH) {
+  if (content.length <= maxLength) return [content];
+
+  const chunks = [];
+  let remaining = content;
+  while (remaining.length > maxLength) {
+    let splitAt = remaining.lastIndexOf("\n\n", maxLength);
+    if (splitAt <= 0) splitAt = remaining.lastIndexOf("\n", maxLength);
+    if (splitAt <= 0) splitAt = maxLength;
+    chunks.push(remaining.slice(0, splitAt).trimEnd());
+    remaining = remaining.slice(splitAt).trimStart();
+  }
+  if (remaining.length > 0) chunks.push(remaining);
+  return chunks;
+}
+
 export async function postToDiscord(webhookUrl, content) {
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content }),
-  });
-  if (!response.ok) {
-    throw new Error(`Discord webhook failed: ${response.status} ${await response.text()}`);
+  for (const chunk of splitForDiscord(content)) {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: chunk }),
+    });
+    if (!response.ok) {
+      throw new Error(`Discord webhook failed: ${response.status} ${await response.text()}`);
+    }
   }
 }
 
